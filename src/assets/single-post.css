@@ -1,0 +1,45 @@
+body {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 38px;
+  line-height: 46px;
+}
+p,
+h1,
+h2 {
+  font-family: "Source Sans Pro", sans-serif;
+  color: #3f2405;
+  text-align: left;
+}
+.post-title {
+  font-weight: bold;
+  color: black;
+}
+.single-image {
+  height: 400px;
+  object-fit: cover;
+  width: 100%;
+}
+.content{
+  padding:5% 0;
+}
+
+.comment{
+  border:1px dashed black;
+  border-radius:15px;
+  padding:10px;
+}
+.comment h3{
+  text-align:left;
+  font-weight:550;
+  width:auto;
+  padding:10px 0;
+}
+
+
+
+
+
