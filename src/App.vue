@@ -6,10 +6,12 @@
 </template>
 
 <script>
-import router from "./components/router/myRouter.vue";
+import router from "./components/router/index";
+
 
 export default {
   name: "App",
+  router
 };
 </script>
 

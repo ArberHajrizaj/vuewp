@@ -4,9 +4,13 @@
       <li v-if="currentPage > 1" class="page-item" @click="paginate(currentPage - 1)">
         <button class="page-link">Previous</button>
       </li>
-      <li v-for="number in pageNumbers" :key="number" :class="`page-item${currentPage === number ? ' active' : ''}`" @click="paginate(number)">
+
+      <li v-for="number in pageNumbers" :key="number"
+        :class="['page-item', currentPage === number ? 'active' : '']"
+        @click="paginate(number)">
         <button class="page-link">{{ number }}</button>
       </li>
+
       <li v-if="currentPage < totalPages" class="page-item" @click="paginate(currentPage + 1)">
         <button class="page-link">Next</button>
       </li>
@@ -15,6 +19,8 @@
 </template>
 
 <script>
+import '../../assets/pagination.css';
+
 export default {
   name: 'Pagination',
   props: {
@@ -39,61 +45,43 @@ export default {
       default: 6,
     },
   },
-  created() {
-    this.paginate(this.currentPage);
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.totalPosts / this.postsPerPage);
-    },
-    pageNumbers() {
-      const numbers = [];
-      let startPage = 1;
-      let endPage = this.totalPages;
 
-      if (this.totalPages > this.displayRange) {
+  
+  computed: {
+    
+    pageNumbers() {
+      const pageNumbers = [];
+      const totalPages = Math.ceil(this.totalPosts / this.postsPerPage);
+      let startPage = 1;
+      let endPage = totalPages;
+      if (totalPages > this.displayRange) {
         const halfDisplay = Math.floor(this.displayRange / 2);
         if (this.currentPage <= halfDisplay) {
           endPage = this.displayRange;
-        } else if (this.currentPage + halfDisplay >= this.totalPages) {
-          startPage = this.totalPages - this.displayRange + 1;
+        } else if (this.currentPage + halfDisplay >= totalPages) {
+          startPage = totalPages - this.displayRange + 1;
         } else {
           startPage = this.currentPage - halfDisplay;
           endPage = this.currentPage + halfDisplay;
         }
       }
+      console.log("startPage: ", startPage);
+      console.log("endPage: ", endPage);
 
       for (let i = startPage; i <= endPage; i++) {
-        numbers.push(i);
+        pageNumbers.push(i);
       }
-
-      return numbers;
+      console.log("Page Numbers: ", pageNumbers);
+      return pageNumbers;
     },
+    totalPages() {
+      return Math.ceil(this.totalPosts / this.postsPerPage);
+    },
+    
   },
 };
+
+
 </script>
 
-<style scoped>
-.pagination-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-}
 
-.pagination {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.page-item {
-  margin-right: 0.5rem;
-}
-
-.active button {
-  background-color: #007bff;
-  border-color: #007bff;
-  color: #fff;
-}
-</style>

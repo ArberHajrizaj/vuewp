@@ -139,3 +139,11 @@ input[type="text"] {
   padding: 8px;
   width: 25%;
 }
+
+
+
+.blog-page-wrapper > div{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}

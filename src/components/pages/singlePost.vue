@@ -12,7 +12,9 @@
 
     <div class="comments">
       <h2>Comments</h2>
-      <p v-if="comments.length === 0">No comments for this post.</p>
+      <div v-if="comments.length === 0">
+        <p>No comments for this post.</p>
+      </div>
       <div v-else>
         <div v-for="comment in comments" :key="comment.id" class="comment">
           <h3>{{ comment.author_name }}</h3>
@@ -20,72 +22,40 @@
         </div>
       </div>
     </div>
-
-    <button class="add-post-button" @click="showAddPostForm = true">
-      Add new Post
-    </button>
-
-    <div v-if="showAddPostForm" class="add-post-form-container">
-      <form @submit.prevent="handleAddPostFormSubmit" class="add-post-form" enctype="multipart/form-data">
-        <h2>Add New Post</h2>
-        <input type="text" placeholder="Title" v-model="newPostData.title" />
-        <textarea placeholder="Content" v-model="newPostData.content"></textarea>
-        <input type="file" accept="image/*" @change="handleFileChange" />
-        <button type="submit">Submit</button>
-        <button type="button" @click="cancelAddPostForm">Cancel</button>
-      </form>
-    </div>
   </div>
 </template>
 
-  
 <script>
-import { fetchSingleBlogPost, fetchMedia, fetchComments, addNewPost } from "../api/blog";
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { fetchSingleBlogPost, fetchMedia, fetchComments } from "../api/blog";
 import "../../assets/single-post.css";
 
 export default {
-  data() {
-    return {
-      blog: null,
-      featuredMedia: null,
-      comments: [],
-      showAddPostForm: false,
-      newPostData: { title: "", content: "", featuredMedia: null }
-    };
-  },
-  methods: {
-    async fetchData() {
-      const { data } = await fetchSingleBlogPost(this.$route.params.id);
-      this.blog = data;
+  setup() {
+    const blog = ref(null);
+    const featuredMedia = ref(null);
+    const comments = ref([]);
+    const router = useRouter();
+    const route = useRoute();
+
+    onMounted(async () => {
+      const { data } = await fetchSingleBlogPost(route.params.id);
+      blog.value = data;
       if (data && data.featured_media) {
         const mediaData = await fetchMedia(data.featured_media);
-        this.featuredMedia = mediaData.data;
+        featuredMedia.value = mediaData.data;
       }
-      const commentsData = await fetchComments(this.$route.params.id);
-      this.comments = commentsData;
-    },
-    async handleAddPostFormSubmit(e) {
-      e.preventDefault();
-      await addNewPost(this.newPostData.title, this.newPostData.content, this.newPostData.featuredMedia);
-      this.newPostData = { title: "", content: "", featuredMedia: null };
-      this.showAddPostForm = false;
-      await this.fetchData();
-    },
-    handleFileChange(e) {
-      this.newPostData.featuredMedia = e.target.files[0];
-    },
-    cancelAddPostForm() {
-      this.showAddPostForm = false;
-    }
+      const commentsData = await fetchComments(route.params.id);
+      comments.value = commentsData;
+    });
+
+    return {
+      blog,
+      featuredMedia,
+      comments,
+    };
   },
-  created() {
-    this.fetchData();
-  }
 };
 </script>
 
-  
-  <style scoped>
-  /* Add your styles here */
-  </style>
-  

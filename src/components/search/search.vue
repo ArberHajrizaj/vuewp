@@ -1,34 +1,21 @@
 <template>
   <form @submit.prevent="handleSearch">
-    <input
-      type="text"
-      placeholder="Search posts..."
-      v-model="searchQuery"
-      @input="handleInputChange"
-    />
+    <input type="text" placeholder="Search posts..." v-model="searchQuery" />
     <button type="submit">Search</button>
   </form>
 </template>
 
 <script>
 export default {
-  name: "SearchBar",
   data() {
     return {
-      searchQuery: ""
-    };
-  },
-  methods: {
-    handleSearch(event) {
-      event.preventDefault();
-      this.$emit("search", this.searchQuery);
-    },
-    handleInputChange(event) {
-      this.searchQuery = event.target.value;
+      searchQuery: ''
     }
   },
-  created() {
-    this.searchQuery = this.$route.query.q || '';
-  },
-};
+  methods: {
+    handleSearch() {
+      this.$emit('search', this.searchQuery)
+    }
+  }
+}
 </script>

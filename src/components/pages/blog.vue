@@ -1,115 +1,108 @@
 <template>
   <div class="front-page-wrapper">
     <div class="search-container">
-      <input
-        type="text"
-        placeholder="Search by title"
-        v-model="searchTerm"
-        @input="handleSearch"
-      />
+      <input type="text" placeholder="Search by title" v-model="searchTerm" @input="handleSearch" />
     </div>
     <div class="blog-page-wrapper">
       <div v-if="loading">Loading...</div>
-      <template v-else>
-        <div v-if="currentPosts.length > 0">
-          <div
-            v-for="post in currentPosts"
-            :key="post.id"
-            :to="`/${post.id}`"
-            class="postLink"
-          >
-            <div class="blog-card">
-              <div class="blog-card-image">
-                <img
-                  :src="post._embedded['wp:featuredmedia'][0].source_url"
-                  :alt="post.title.rendered"
-                  style="border-radius: 15px 15px 0 0"
-                />
-              </div>
-              <div class="blog-card-content">
-                <h3 class="blog-card-title">{{ post.title.rendered }}</h3>
-                <p
-                  class="blog-card-excerpt"
-                  :style="{ maxHeight: '3em', overflow: 'hidden' }"
-                  v-html="post.excerpt.rendered"
-                ></p>
-              </div>
+      <div v-else-if="currentPosts.length > 0">
+        <router-link v-for="post in currentPosts" :key="post.id" :to="`/${post.id}`" class="postLink">
+          <div class="blog-card">
+            <div class="blog-card-image">
+              <img :src="post._embedded['wp:featuredmedia'][0].source_url" :alt="post.title.rendered"
+                style="border-radius: 15px 15px 0 0" />
+            </div>
+            <div class="blog-card-content">
+              <h3 class="blog-card-title">{{ post.title.rendered }}</h3>
+              <p class="blog-card-excerpt" :style="{ maxHeight: '3em', overflow: 'hidden' }"
+                v-html="post.excerpt.rendered"></p>
             </div>
           </div>
-        </div>
-        <div v-else>No posts found.</div>
-      </template>
+        </router-link>
+      </div>
+      <div v-else>No posts found.</div>
     </div>
-
+    <Pagination :postsPerPage="postsPerPage" :totalPosts="filteredPosts.length" :paginate="paginate"
+      :currentPage="currentPage" />
   </div>
 </template>
 
 <script>
-import { fetchBlogs } from "../api/blog";
-import Pagination from "../pagination/Pagination.vue";
+import { ref, reactive, onMounted, watch } from 'vue';
+import { fetchBlogs } from '@/components/api/blog.js';
+import Pagination from '../pagination/Pagination.vue';
 
-import "../../assets/blog.css";
-
+import '../../assets/blog.css';
+import '../../assets/index.css';
 
 export default {
-  name: "Blog",
   components: {
-    Pagination
+    Pagination,
   },
-  data() {
-    return {
-      blogs: [],
-      loading: true,
-      currentPage: 1,
-      postsPerPage: 12,
-      blogPost: null,
-      media: null,
-      error: null,
-      searchTerm: ""
-    };
-  },
-  created() {
-    this.fetchData();
-  },
-  methods: {
-    async fetchData() {
+  setup() {
+    const loading = ref(true);
+    const currentPage = ref(1);
+    const postsPerPage = ref(12);
+    const error = ref(null);
+    const searchTerm = ref('');
+    const filteredPosts = ref([]);
+    const blogs = ref([]);
+
+    const fetchData = async () => {
       try {
-        const blogs = await fetchBlogs();
-        console.log("blogs:", blogs);
-        this.blogs = blogs;
-        this.loading = false;
-      } catch (error) {
-        console.log("error:", error);
-        this.error = true;
+        const data = await fetchBlogs();
+        console.log('blogs:', data);
+        blogs.value = data;
+        filteredPosts.value = data;
+        loading.value = false;
+        updateCurrentPosts();
+      } catch (err) {
+        console.log('error:', err);
+        error.value = true;
       }
-    },
-    paginate(pageNumber) {
-      this.currentPage = pageNumber;
-    },
-    handleSearch(event) {
-      this.searchTerm = event.target.value;
-      this.currentPage = 1;
-    }
-  },
-  computed: {
-    indexOfLastPost() {
-      return this.currentPage * this.postsPerPage;
-    },
-    indexOfFirstPost() {
-      return this.indexOfLastPost - this.postsPerPage;
-    },
-    filteredPosts() {
-      return this.blogs.filter(post =>
-        post.title.rendered.toLowerCase().includes(this.searchTerm.toLowerCase())
+    };
+
+
+    onMounted(() => {
+      fetchData();
+    });
+
+    watch([currentPage, postsPerPage, filteredPosts], () => {
+      updateCurrentPosts();
+    });
+
+    const paginate = (pageNumber) => {
+      currentPage.value = pageNumber;
+    };
+
+    const handleSearch = (event) => {
+      searchTerm.value = event.target.value;
+      currentPage.value = 1;
+      filteredPosts.value = blogs.value.filter((post) =>
+        post.title.rendered.toLowerCase().includes(searchTerm.value.toLowerCase())
       );
-    },
-    currentPosts() {
-      return this.filteredPosts.slice(this.indexOfFirstPost, this.indexOfLastPost);
-    }
+    };
+
+    const currentPosts = ref([]);
+
+    const updateCurrentPosts = () => {
+      const indexOfLastPost = currentPage.value * postsPerPage.value;
+      const indexOfFirstPost = indexOfLastPost - postsPerPage.value;
+      currentPosts.value = filteredPosts.value.slice(indexOfFirstPost, indexOfLastPost);
+    };
+
+    return {
+      loading,
+      currentPage,
+      postsPerPage,
+      error,
+      searchTerm,
+      filteredPosts,
+      blogs,
+      currentPosts,
+      paginate,
+      handleSearch,
+    };
   }
 };
 </script>
-
-<style scoped>
-/* Your blog component's styles here */
-</style>
