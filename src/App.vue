@@ -1,18 +1,15 @@
 <template>
   <div>
     <!-- Your component's template goes here -->
-    <MyRouter></MyRouter>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import MyRouter from "./components/router/MyRouter.vue";
+import router from "./components/router/myRouter.vue";
 
 export default {
   name: "App",
-  components: {
-    MyRouter
-  }
 };
 </script>
 

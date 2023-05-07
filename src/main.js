@@ -1,34 +1,40 @@
-// import { createApp } from "vue";
-// import App from "./App.vue";
-// import router from './components/router/myRouter' 
+// import { createApp } from 'vue'
+// import App from './App.vue'
+// import router from './components/router/myRouter.vue'
 
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "./assets/blog.css"; 
-
-// // require('dotenv').config()
-
-
-// // Create a Vue app instance
-// const app = createApp(App);
+// const app = createApp(App)
 
 // // set up the router
 // app.use(router)
 
-// // Mount the Vue app instance to the DOM
-// app.mount("#root");
+// app.mount('#app')
 
 
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './components/router/MyRouter.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import Blog from './components/Blog.vue'
+import SinglePost from './components/SinglePost.vue'
+import Search from './components/Search.vue'
 
+// define your routes
+const routes = [
+  { path: '/', component: Blog },
+  { path: '/post/:id', component: SinglePost },
+  { path: '/search', component: Search }
+]
+
+// create the router instance
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+// create the app instance
 const app = createApp(App)
 
-// set up the router
+// use the router instance
 app.use(router)
 
-// register the router-view component
-app.component('router-view', router)
-
-app.mount('#root')
-
+// mount the app
+app.mount('#app')

@@ -40,12 +40,7 @@
         <div v-else>No posts found.</div>
       </template>
     </div>
-    <pagination
-      :postsPerPage="postsPerPage"
-      :totalPosts="filteredPosts.length"
-      :paginate="paginate"
-      :currentPage="currentPage"
-    ></pagination>
+
   </div>
 </template>
 
