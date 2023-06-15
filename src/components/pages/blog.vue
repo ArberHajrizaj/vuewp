@@ -51,13 +51,11 @@ export default {
     const fetchData = async () => {
       try {
         const data = await fetchBlogs();
-        console.log('blogs:', data);
         blogs.value = data;
         filteredPosts.value = data;
         loading.value = false;
         updateCurrentPosts();
       } catch (err) {
-        console.log('error:', err);
         error.value = true;
       }
     };

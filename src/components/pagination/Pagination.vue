@@ -5,8 +5,7 @@
         <button class="page-link">Previous</button>
       </li>
 
-      <li v-for="number in pageNumbers" :key="number"
-        :class="['page-item', currentPage === number ? 'active' : '']"
+      <li v-for="number in pageNumbers" :key="number" :class="['page-item', currentPage === number ? 'active' : '']"
         @click="paginate(number)">
         <button class="page-link">{{ number }}</button>
       </li>
@@ -46,9 +45,9 @@ export default {
     },
   },
 
-  
+
   computed: {
-    
+
     pageNumbers() {
       const pageNumbers = [];
       const totalPages = Math.ceil(this.totalPosts / this.postsPerPage);
@@ -65,19 +64,16 @@ export default {
           endPage = this.currentPage + halfDisplay;
         }
       }
-      console.log("startPage: ", startPage);
-      console.log("endPage: ", endPage);
 
       for (let i = startPage; i <= endPage; i++) {
         pageNumbers.push(i);
       }
-      console.log("Page Numbers: ", pageNumbers);
       return pageNumbers;
     },
     totalPages() {
       return Math.ceil(this.totalPosts / this.postsPerPage);
     },
-    
+
   },
 };
 
